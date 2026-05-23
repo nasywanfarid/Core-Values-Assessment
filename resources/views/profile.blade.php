@@ -39,13 +39,23 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6">
+                             <div class="col-md-6">
                                 <label for="email" class="form-label fw-semibold">Alamat Email</label>
                                 <input type="email" class="form-control @error('email') is-invalid @enderror" 
                                        id="email" name="email" value="{{ old('email', auth()->user()->email) }}" required>
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">NIP</label>
+                                <input type="text" class="form-control bg-light" value="{{ auth()->user()->nip }}" readonly>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Divisi / Cabang</label>
+                                <input type="text" class="form-control bg-light" value="{{ auth()->user()->division->name ?? '-' }} / {{ auth()->user()->branch->name ?? '-' }}" readonly>
                             </div>
 
                             <hr class="my-4">

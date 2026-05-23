@@ -80,7 +80,7 @@
         }
     </style>
 </head>
-<body class="text-white min-h-screen overflow-hidden relative flex items-center justify-center">
+<body class="text-white min-h-screen relative flex items-center justify-center py-10">
 
     <!-- Decorative Elements (Optional, kept subtle) -->
     <div class="blob-1 opacity-20"></div>

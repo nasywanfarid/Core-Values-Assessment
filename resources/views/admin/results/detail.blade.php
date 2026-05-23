@@ -16,7 +16,10 @@
                              class="rounded-circle me-3 border border-2 border-primary p-1" width="60" height="60">
                         <div>
                             <h4 class="mb-0 fw-bold text-dark">{{ $employee->name }}</h4>
-                            <p class="text-muted mb-0">{{ $employee->division->name ?? '-' }} | {{ $employee->branch->name ?? '-' }}</p>
+                            <p class="text-muted mb-0">
+                                {{ $employee->division->name ?? '-' }} | {{ $employee->branch->name ?? '-' }} | 
+                                <span class="fw-bold text-primary">Periode {{ \Carbon\Carbon::parse($date)->translatedFormat('F Y') }}</span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -57,10 +60,14 @@
                                 @php $rowSum = 0; @endphp
                                 @foreach($indicators as $indicator)
                                     @php 
-                                        $score = $assignment->assessments->where('indicator_id', $indicator->id)->first()->score ?? 0;
+                                        $assessment = $assignment->assessments->where('indicator_id', $indicator->id)->first();
+                                        $score = $assessment->score ?? 0;
+                                        $reason = $assessment->reason ?? 'Tidak ada alasan';
                                         $rowSum += $score;
                                     @endphp
-                                    <td class="{{ $score >= 4 ? 'text-success' : ($score <= 2 ? 'text-danger' : '') }} fw-medium">
+                                    <td class="{{ $score >= 4 ? 'text-success' : ($score <= 2 ? 'text-danger' : '') }} fw-medium" 
+                                        title="{{ $reason }}" 
+                                        style="cursor: help;">
                                         {{ $score }}
                                     </td>
                                 @endforeach
@@ -95,7 +102,18 @@
 
     <!-- Summary Cards -->
     <div class="col-lg-4 mb-4">
-        <div class="card premium-card border-0 shadow-sm h-100 bg-primary text-white overflow-hidden position-relative">
+        @php
+            $bgClass = match($gradeInfo['grade']) {
+                'A' => 'bg-success',
+                'B' => 'bg-primary',
+                'C' => 'bg-warning text-dark',
+                'D' => '',
+                'E' => 'bg-danger',
+                default => 'bg-secondary'
+            };
+            $customCardStyle = $gradeInfo['grade'] === 'D' ? 'background-color: #ff8c00;' : '';
+        @endphp
+        <div class="card premium-card border-0 shadow-sm h-100 {{ $bgClass }} text-white overflow-hidden position-relative" style="{{ $customCardStyle }}">
             <div class="card-body position-relative" style="z-index: 1;">
                 <h6 class="text-white text-opacity-75 mb-3">NILAI AKHIR KARYAWAN</h6>
                 <div class="d-flex align-items-baseline">
@@ -118,8 +136,21 @@
             <div class="card-body d-flex flex-column justify-content-center p-4">
                 <div class="row align-items-center">
                     <div class="col-md-3 text-center mb-3 mb-md-0">
-                        <div class="display-1 fw-bold text-primary">{{ $gradeInfo['grade'] }}</div>
-                        <span class="badge bg-primary px-3 py-1 rounded-pill">GRADE</span>
+                        @php
+                            $badgeClass = match($gradeInfo['grade']) {
+                                'A' => 'bg-success',
+                                'B' => 'bg-primary',
+                                'C' => 'bg-warning text-dark',
+                                'D' => 'text-white',
+                                'E' => 'bg-danger',
+                                default => 'bg-secondary'
+                            };
+                            $customBadgeStyle = $gradeInfo['grade'] === 'D' ? 'background-color: #ff8c00;' : '';
+                        @endphp
+                        <div class="display-1 fw-bold {{ $gradeInfo['grade'] === 'C' ? 'text-warning' : ($gradeInfo['grade'] === 'D' ? '' : 'text-primary') }}" style="{{ $gradeInfo['grade'] === 'D' ? 'color: #ff8c00;' : '' }}">
+                            {{ $gradeInfo['grade'] }}
+                        </div>
+                        <span class="badge {{ $badgeClass }} px-3 py-1 rounded-pill" style="{{ $customBadgeStyle }}">GRADE</span>
                     </div>
                     <div class="col-md-9">
                         <h5 class="fw-bold text-dark mb-3">Kesimpulan Hasil Penilaian</h5>

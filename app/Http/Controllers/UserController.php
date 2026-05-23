@@ -21,6 +21,15 @@ class UserController extends Controller
             $query->where('division_id', $request->division_id);
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('nip', 'like', "%{$search}%");
+            });
+        }
+
         $sort = $request->get('sort', 'name');
         $direction = $request->get('direction', 'asc');
         

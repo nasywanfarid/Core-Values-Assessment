@@ -9,6 +9,7 @@ use App\Models\ReviewerAssignment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class AssessmentResultController extends Controller
 {
@@ -50,12 +51,17 @@ class AssessmentResultController extends Controller
             'branch_id' => 'required|exists:branches,id'
         ]);
 
-        // Hapus semua penugasan (dan otomatis asesmennya karena cascade) pada tanggal & cabang tersebut
-        ReviewerAssignment::where('assessment_date', $request->date)
+        $normalizedDate = \Carbon\Carbon::parse($request->date)->startOfMonth()->format('Y-m-d');
+
+        // Cari semua ID penugasan pada periode & cabang tersebut
+        $assignmentIds = ReviewerAssignment::where('assessment_date', $normalizedDate)
             ->whereHas('reviewer', function($q) use ($request) {
                 $q->where('branch_id', $request->branch_id);
             })
-            ->delete();
+            ->pluck('id');
+
+        // Hapus penugasan (otomatis hapus asesmen karena cascade di database)
+        ReviewerAssignment::whereIn('id', $assignmentIds)->delete();
 
         return redirect()->back()->with('success', 'Data penilaian periode tersebut berhasil dihapus.');
     }
@@ -116,6 +122,29 @@ class AssessmentResultController extends Controller
         return view('admin.results.period', compact('results', 'date', 'branch', 'divisions'));
     }
 
+    private function getClustersFromPython($data)
+    {
+        if (empty($data)) return $data;
+
+        try {
+            // Timeout 5 detik agar tidak menghambat loading jika API mati
+            $response = Http::timeout(5)->post('http://localhost:5000/cluster', $data);
+            
+            if ($response->successful()) {
+                return $response->json();
+            }
+        } catch (\Exception $e) {
+            // Log error jika perlu, tapi biarkan aplikasi tetap jalan
+            \Log::warning("Gagal terhubung ke Flask API: " . $e->getMessage());
+        }
+
+        // Jika gagal, tambahkan kolom Kategori kosong agar tidak error di view
+        return array_map(function($item) {
+            $item['Kategori'] = '-';
+            return $item;
+        }, $data);
+    }
+
     public function exportExcel($date, $branchId)
     {
         $branch = Branch::findOrFail($branchId);
@@ -173,6 +202,89 @@ class AssessmentResultController extends Controller
             'gradeInfo',
             'date'
         ));
+    }
+
+    public function clustering(Request $request)
+    {
+        $branches = Branch::all();
+        
+        // Get available periods for the dropdown
+        $periods = ReviewerAssignment::select('assessment_date')
+            ->groupBy('assessment_date')
+            ->orderBy('assessment_date', 'desc')
+            ->get();
+
+        $selectedDate = $request->date;
+        $selectedBranchId = $request->branch_id;
+        $results = null;
+        $summary = null;
+        $branch = null;
+
+        if ($selectedDate && $selectedBranchId) {
+            $branch = Branch::find($selectedBranchId);
+            
+            // Ambil semua karyawan yang menjadi subjek penilaian di periode & cabang ini
+            $employees = User::whereHas('assignmentsAsReviewee', function($q) use ($selectedDate, $selectedBranchId) {
+                $q->where('assessment_date', $selectedDate)
+                  ->whereHas('reviewer', function($rq) use ($selectedBranchId) {
+                      $rq->where('branch_id', $selectedBranchId);
+                  });
+            })->with(['division', 'assignmentsAsReviewee' => function($q) use ($selectedDate) {
+                $q->where('assessment_date', $selectedDate)->with('assessments');
+            }])->get();
+
+            $indicators = Indicator::all();
+            $indicatorMap = [
+                1 => 'Bahagia', 2 => 'Etika', 3 => 'Responsif', 4 => 'Hangat',
+                5 => 'Amanah', 6 => 'Semangat', 7 => 'Inovatif', 8 => 'Loyal'
+            ];
+
+            $dataForClustering = $employees->map(function($user) use ($indicators, $indicatorMap) {
+                $assignments = $user->assignmentsAsReviewee;
+                $totalSum = 0;
+                $reviewerCount = $assignments->count();
+
+                $row = [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'division' => $user->division->name ?? '-',
+                ];
+
+                foreach ($indicatorMap as $name) { $row[$name] = 0; }
+
+                if ($reviewerCount > 0) {
+                    foreach ($indicators as $indicator) {
+                        $indicatorSum = 0;
+                        foreach ($assignments as $assignment) {
+                            $assessment = $assignment->assessments->where('indicator_id', $indicator->id)->first();
+                            if ($assessment) $indicatorSum += $assessment->score;
+                        }
+                        $featureName = $indicatorMap[$indicator->id] ?? null;
+                        if ($featureName) $row[$featureName] = $indicatorSum / $reviewerCount;
+                    }
+                }
+
+                foreach ($assignments as $assignment) { $totalSum += $assignment->assessments->sum('score'); }
+                $row['total_score'] = round($reviewerCount > 0 ? $totalSum / $reviewerCount : 0, 2);
+                return $row;
+            })->toArray();
+
+            // Panggil Flask API
+            $clusteredData = $this->getClustersFromPython($dataForClustering);
+            
+            // Group by Kategori
+            $results = collect($clusteredData)->map(function($item) {
+                return (object) $item;
+            })->groupBy('Kategori');
+
+            // Hitung summary
+            $summary = [
+                'Implementasi Core Values Tinggi' => isset($results['Implementasi Core Values Tinggi']) ? $results['Implementasi Core Values Tinggi']->count() : 0,
+                'Implementasi Core Values Rendah' => isset($results['Implementasi Core Values Rendah']) ? $results['Implementasi Core Values Rendah']->count() : 0,
+            ];
+        }
+
+        return view('admin.results.clustering', compact('branches', 'periods', 'results', 'summary', 'selectedDate', 'selectedBranchId', 'branch'));
     }
 
     public function calculateGrade($score)

@@ -21,5 +21,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+
+        if (str_contains(config('app.url'), 'https') && !in_array(request()->getHost(), ['127.0.0.1', 'localhost'])) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
     }
 }

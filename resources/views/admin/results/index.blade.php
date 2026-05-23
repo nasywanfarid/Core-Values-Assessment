@@ -39,7 +39,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th class="ps-4">No</th>
-                                <th>Periode Tanggal</th>
+                                <th>Periode</th>
                                 <th>Cabang</th>
                                 <th class="text-center">Jumlah Karyawan Dinilai</th>
                                 <th class="text-center">Aksi</th>
@@ -51,7 +51,7 @@
                                 <td class="ps-4">{{ $loop->iteration }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        <span class="fw-medium">{{ \Carbon\Carbon::parse($period->assessment_date)->isoFormat('D MMMM YYYY') }}</span>
+                                        <span class="fw-medium">{{ \Carbon\Carbon::parse($period->assessment_date)->translatedFormat('F Y') }}</span>
                                     </div>
                                 </td>
                                 <td>

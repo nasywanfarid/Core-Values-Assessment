@@ -118,20 +118,22 @@
                 left: -280px;
                 width: 280px;
                 height: 100%;
+                box-shadow: 10px 0 30px rgba(0,0,0,0.1);
             }
             .sidebar.show {
                 left: 0;
             }
             .main-content {
                 padding: 15px;
+                margin-left: 0 !important;
             }
             .topbar {
-                padding: 10px 15px;
-                border-radius: 8px;
+                padding: 12px 15px;
+                border-radius: 12px;
                 margin-bottom: 20px;
             }
             .page-title {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             .sidebar-overlay {
                 display: none;
@@ -140,11 +142,26 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0,0,0,0.5);
+                background: rgba(15, 23, 42, 0.6);
+                backdrop-filter: blur(4px);
                 z-index: 1040;
             }
             .sidebar-overlay.show {
                 display: block;
+            }
+            .container-fluid {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+        }
+        
+        /* Tablet & Mobile Grid Adjustments */
+        @media (max-width: 767.98px) {
+            .premium-card .card-body {
+                padding: 1.25rem !important;
+            }
+            .btn-sm {
+                padding: 0.4rem 0.8rem;
             }
         }
     </style>
@@ -190,7 +207,12 @@
                     </li>
                     <li class="nav-item">
                         <a href="{{ route('admin.interaction-matrices.index') }}" class="nav-link {{ request()->routeIs('admin.interaction-matrices.*') ? 'active' : '' }}">
-                            <i class="fas fa-network-wired"></i> Matriks Nilai
+                            <i class="fas fa-network-wired"></i> Matriks Penilai
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.generate-assessments.index') }}" class="nav-link {{ request()->routeIs('admin.generate-assessments.*') ? 'active' : '' }}">
+                            <i class="fas fa-magic"></i> Generate Matriks
                         </a>
                     </li>
                     @endif
@@ -205,8 +227,13 @@
 
                     @if(in_array(auth()->user()->role, ['admin', 'hr', 'direktur']))
                     <li class="nav-item">
-                        <a href="{{ route('admin.results.index') }}" class="nav-link {{ request()->routeIs('admin.results.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.results.index') }}" class="nav-link {{ request()->routeIs('admin.results.*') && !request()->routeIs('admin.results.clustering') ? 'active' : '' }}">
                             <i class="fas fa-chart-line"></i> Hasil Penilaian
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.results.clustering') }}" class="nav-link {{ request()->routeIs('admin.results.clustering') ? 'active' : '' }}">
+                            <i class="fas fa-layer-group"></i> Kelompok Karyawan
                         </a>
                     </li>
                     @endif
@@ -217,7 +244,7 @@
                     <div class="dropup position-relative">
                         <a href="javascript:void(0)" class="d-flex align-items-center text-decoration-none text-dark dropdown-toggle p-2 rounded hover-bg" id="dropdownUserToggle" onclick="toggleUserDropdown(event)">
                             <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=ec4899&color=fff" alt="" width="32" height="32" class="rounded-circle me-2">
-                            <strong class="d-none d-sm-inline">{{ auth()->user()->name }}</strong>
+                            <strong class="text-dark">{{ auth()->user()->name }}</strong>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark text-small shadow position-absolute" id="userDropdownMenu" style="bottom: 100%; left: 0; margin-bottom: 10px;">
                             <li><a class="dropdown-item" href="{{ route('profile') }}"><i class="fas fa-user-circle me-2"></i> Profile</a></li>
@@ -257,7 +284,6 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('show');

@@ -14,6 +14,7 @@
                         <ul class="list-inline mb-0 text-white-50">
                             <li class="list-inline-item"><i class="fas fa-id-badge me-1"></i> NIP: {{ $assignment->reviewee->nip ?? '-' }}</li>
                             <li class="list-inline-item"><i class="fas fa-sitemap me-1 ms-3"></i> Divisi: {{ $assignment->reviewee->division->name ?? '-' }}</li>
+                            <li class="list-inline-item"><i class="fas fa-calendar-alt me-1 ms-3"></i> Periode: {{ \Carbon\Carbon::parse($assignment->assessment_date)->translatedFormat('F Y') }}</li>
                         </ul>
                     </div>
                     <div class="col-md-4 text-md-end mt-4 mt-md-0">
@@ -30,6 +31,17 @@
                 <h5 class="fw-bold"><i class="fas fa-info-circle me-2"></i> Panduan Penilaian</h5>
                 <p class="mb-0">Berikan penilaian yang objektif pada 8 indikator <strong>BERHASIL</strong> di bawah ini (skala 1-5). Anda juga dapat memberikan alasan singkat untuk mendukung penilaian yang Anda berikan.</p>
             </div>
+
+            @if($errors->any())
+            <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4 p-4">
+                <h5 class="fw-bold"><i class="fas fa-exclamation-triangle me-2"></i> Ada Kesalahan Input</h5>
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
 
             @foreach($indicators as $index => $indicator)
             <div class="card premium-card border-0 mb-4 indicator-card">
@@ -59,15 +71,18 @@
                             <div class="d-flex justify-content-between scale-options px-2">
                                 @for($i = 1; $i <= 5; $i++)
                                 <div class="form-check p-0 me-2 position-relative">
-                                    <input type="radio" class="btn-check" name="scores[{{ $indicator->id }}]" id="score_{{ $indicator->id }}_{{ $i }}" value="{{ $i }}" required>
+                                    <input type="radio" class="btn-check" name="scores[{{ $indicator->id }}]" id="score_{{ $indicator->id }}_{{ $i }}" value="{{ $i }}" {{ old('scores.'.$indicator->id) == $i ? 'checked' : '' }} required>
                                     <label class="btn btn-outline-primary fw-bold rounded-circle d-flex justify-content-center align-items-center transition-all shadow-sm" style="width: 50px; height: 50px;" for="score_{{ $indicator->id }}_{{ $i }}">{{ $i }}</label>
                                 </div>
                                 @endfor
                             </div>
                         </div>
                         <div class="col-md-5">
-                            <label class="form-label fw-bold text-dark mb-2">Alasan / Keterangan (Wajib)</label>
-                            <textarea class="form-control bg-light border-0 shadow-sm p-3" name="reasons[{{ $indicator->id }}]" rows="6" placeholder="Tulis alasan spesifik Anda mengapa memberikan nilai tersebut..." required></textarea>
+                            <label class="form-label fw-bold text-dark mb-2">Alasan / Keterangan</label>
+                            <textarea class="form-control bg-light border-0 shadow-sm p-3 @error('reasons.'.$indicator->id) is-invalid @enderror" name="reasons[{{ $indicator->id }}]" rows="6" placeholder="Tulis alasan spesifik Anda mengapa memberikan nilai tersebut..." required>{{ old('reasons.'.$indicator->id) }}</textarea>
+                            @error('reasons.'.$indicator->id)
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                             <div class="form-text mt-2"><i class="fas fa-exclamation-triangle me-1"></i> Mohon berikan alasan yang objektif.</div>
                         </div>
                     </div>

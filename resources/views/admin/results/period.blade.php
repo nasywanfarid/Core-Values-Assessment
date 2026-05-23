@@ -13,7 +13,7 @@
                             <i class="fas fa-arrow-left"></i>
                         </a>
                         <div>
-                            <h5 class="mb-0 fw-bold">Periode: {{ \Carbon\Carbon::parse($date)->isoFormat('D MMMM YYYY') }}</h5>
+                            <h5 class="mb-0 fw-bold">Periode: {{ \Carbon\Carbon::parse($date)->translatedFormat('F Y') }}</h5>
                             <p class="text-muted small mb-0">Cabang: {{ $branch->name }}</p>
                         </div>
                     </div>
@@ -86,13 +86,14 @@
                                         $badgeClass = match($item->grade) {
                                             'A' => 'bg-success',
                                             'B' => 'bg-primary',
-                                            'C' => 'bg-info',
-                                            'D' => 'bg-warning text-dark',
+                                            'C' => 'bg-warning text-dark',
+                                            'D' => 'text-white',
                                             'E' => 'bg-danger',
                                             default => 'bg-secondary'
                                         };
+                                        $customStyle = $item->grade === 'D' ? 'background-color: #ff8c00;' : '';
                                     @endphp
-                                    <span class="badge {{ $badgeClass }} px-3 py-2 fs-6 rounded-pill shadow-sm" style="min-width: 45px;">
+                                    <span class="badge {{ $badgeClass }} px-3 py-2 fs-6 rounded-pill shadow-sm" style="min-width: 45px; {{ $customStyle }}">
                                         {{ $item->grade }}
                                     </span>
                                 </td>

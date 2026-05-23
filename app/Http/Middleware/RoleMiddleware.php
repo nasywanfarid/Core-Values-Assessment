@@ -23,6 +23,11 @@ class RoleMiddleware
             abort(403, 'Unauthorized action.');
         }
 
+        // Blokir role HR dari semua aksi penghapusan (DELETE method)
+        if (auth()->user()->role === 'hr' && $request->isMethod('delete')) {
+            abort(403, 'Role HR tidak memiliki izin untuk menghapus data.');
+        }
+
         return $next($request);
     }
 }

@@ -34,7 +34,7 @@
                             <div>
                                 <h6 class="mb-1 fw-bold">{{ $assignment->reviewee->name }}</h6>
                                 <div class="mb-1 small">
-                                    <span class="badge bg-warning text-dark"><i class="fas fa-calendar-alt me-1"></i> {{ \Carbon\Carbon::parse($assignment->assessment_date)->translatedFormat('d F Y') }}</span>
+                                    <span class="badge bg-warning text-dark"><i class="fas fa-calendar-alt me-1"></i> Periode: {{ \Carbon\Carbon::parse($assignment->assessment_date)->translatedFormat('F Y') }}</span>
                                 </div>
                                 <small class="text-muted"><i class="fas fa-id-badge me-1"></i> NIP: {{ $assignment->reviewee->nip ?? '-' }} | Divisi: {{ $assignment->reviewee->division->name ?? 'N/A' }}</small>
                             </div>

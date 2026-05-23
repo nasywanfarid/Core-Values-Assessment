@@ -9,8 +9,8 @@
             <h5 class="fw-bold mb-1">Manajemen Divisi</h5>
             <p class="text-muted mb-0">Kelola daftar divisi perusahaan Anda di sini.</p>
         </div>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-            <i class="fas fa-plus me-2"></i> Tambah Divisi
+        <button class="btn btn-primary rounded px-4" data-bs-toggle="modal" data-bs-target="#createModal">
+            <i class="fas fa-plus me-2"></i> Divisi
         </button>
     </div>
 </div>
@@ -40,7 +40,7 @@
                         <td class="ps-4">{{ $divisions->firstItem() + $index }}</td>
                         <td class="fw-medium text-dark">{{ $division->name }}</td>
                         <td class="text-muted">{{ $division->created_at->format('d M Y') }}</td>
-                        <td class="text-end pe-4">
+                        <td class="text-end pe-4 text-nowrap">
                             <button class="btn btn-sm btn-outline-warning rounded-circle me-1" data-bs-toggle="modal" data-bs-target="#editModal{{ $division->id }}">
                                 <i class="fas fa-edit"></i>
                             </button>

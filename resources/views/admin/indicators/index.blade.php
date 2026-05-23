@@ -10,7 +10,7 @@
             <p class="text-muted mb-0">Kelola indikator Core Values dan deskripsi skala penilaiannya.</p>
         </div>
         <a href="{{ route('admin.indicators.create') }}" class="btn btn-primary rounded px-4">
-            <i class="fas fa-plus me-2"></i> Tambah Indikator
+            <i class="fas fa-plus me-2"></i> Indikator
         </a>
     </div>
 </div>
@@ -32,15 +32,15 @@
                         <span class="badge bg-primary mb-2">Indikator</span>
                         <h5 class="fw-bold text-dark">{{ $indicator->name }}</h5>
                     </div>
-                    <div class="d-flex gap-2">
-                        <a href="{{ route('admin.indicators.edit', $indicator->id) }}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                    <div class="d-flex gap-2 flex-shrink-0">
+                        <a href="{{ route('admin.indicators.edit', $indicator->id) }}" class="btn btn-sm btn-outline-warning rounded-pill px-3 d-inline-flex align-items-center justify-content-center" style="height: 32px;">
                             <i class="fas fa-edit me-1"></i> Edit
                         </a>
                         @if(auth()->user()->role !== 'hr')
-                        <form action="{{ route('admin.indicators.destroy', $indicator->id) }}" method="POST" id="delete-form-{{ $indicator->id }}">
+                        <form action="{{ route('admin.indicators.destroy', $indicator->id) }}" method="POST" id="delete-form-{{ $indicator->id }}" class="m-0">
                             @csrf
                             @method('DELETE')
-                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="confirmDelete('delete-form-{{ $indicator->id }}', 'Indikator ini akan dihapus secara permanen!')">
+                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 d-inline-flex align-items-center justify-content-center" onclick="confirmDelete('delete-form-{{ $indicator->id }}', 'Indikator ini akan dihapus secara permanen!')" style="height: 32px;">
                                 <i class="fas fa-trash me-1"></i> Hapus
                             </button>
                         </form>

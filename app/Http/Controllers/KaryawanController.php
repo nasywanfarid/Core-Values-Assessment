@@ -11,6 +11,7 @@ class KaryawanController extends Controller
         $pendingAssignments = \App\Models\ReviewerAssignment::with('reviewee')
             ->where('reviewer_id', auth()->id())
             ->where('status', 'pending')
+            ->where('is_active', true)
             ->get();
             
         $completedAssignments = \App\Models\ReviewerAssignment::with('reviewee')

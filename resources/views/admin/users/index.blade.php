@@ -3,13 +3,29 @@
 @section('title', 'Data Karyawan')
 
 @section('content')
+<style>
+    @media (max-width: 767.98px) {
+        .mobile-header {
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }
+        .mobile-stack {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            width: 100% !important;
+        }
+        .mobile-filter {
+            width: 100% !important;
+        }
+    }
+</style>
 <div class="card premium-card border-0 shadow-sm">
-    <div class="card-header bg-white border-0 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+    <div class="card-header bg-white border-0 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3 mobile-header">
         <h5 class="mb-0 fw-bold text-primary">Daftar Karyawan</h5>
-        <div class="d-flex align-items-center gap-2">
-            <form action="{{ route('admin.users.index') }}" method="GET" class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center flex-wrap flex-md-nowrap gap-2 mobile-stack">
+            <form action="{{ route('admin.users.index') }}" method="GET" class="d-flex align-items-center flex-wrap flex-md-nowrap gap-2 mobile-stack">
                 <!-- Branch Filter -->
-                <select name="branch_id" class="form-select form-select-sm border-0 rounded px-3 text-muted fw-normal" onchange="this.form.submit()" style="min-width: 150px; background-color: #f3f6f9; font-size: 0.85rem; height: 38px; cursor: pointer;">
+                <select name="branch_id" class="form-select form-select-sm border-0 rounded px-3 text-muted fw-normal mobile-filter" onchange="this.form.submit()" style="width: 170px; background-color: #f3f6f9; font-size: 0.85rem; height: 38px; cursor: pointer;">
                     <option value="">Semua Cabang</option>
                     @foreach($branches as $branch)
                         <option value="{{ $branch->id }}" {{ request('branch_id') == $branch->id ? 'selected' : '' }}>{{ $branch->name }}</option>
@@ -17,21 +33,29 @@
                 </select>
 
                 <!-- Division Filter -->
-                <select name="division_id" class="form-select form-select-sm border-0 rounded px-3 text-muted fw-normal" onchange="this.form.submit()" style="min-width: 150px; background-color: #f3f6f9; font-size: 0.85rem; height: 38px; cursor: pointer;">
+                <select name="division_id" class="form-select form-select-sm border-0 rounded px-3 text-muted fw-normal mobile-filter" onchange="this.form.submit()" style="width: 170px; background-color: #f3f6f9; font-size: 0.85rem; height: 38px; cursor: pointer;">
                     <option value="">Semua Divisi</option>
                     @foreach($divisions as $division)
                         <option value="{{ $division->id }}" {{ request('division_id') == $division->id ? 'selected' : '' }}>{{ $division->name }}</option>
                     @endforeach
                 </select>
 
-                @if(request('branch_id') || request('division_id'))
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-sm rounded-circle border-0 text-muted" title="Bersihkan Filter" style="background-color: #f3f6f9; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
-                        <i class="fas fa-times" style="font-size: 0.8rem;"></i>
+                <!-- Search Input -->
+                <div class="input-group mobile-filter" style="width: 170px;">
+                    <input type="text" name="search" class="form-control form-control-sm border-0 rounded-start px-3 text-muted fw-normal" placeholder="Cari karyawan..." value="{{ request('search') }}" style="background-color: #f3f6f9; font-size: 0.85rem; height: 38px;">
+                    <button class="btn btn-sm border-0 rounded-end text-muted" type="submit" style="background-color: #f3f6f9; height: 38px;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+
+                @if(request('branch_id') || request('division_id') || request('search'))
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-sm rounded-circle border-0 text-muted mobile-filter" title="Bersihkan Filter" style="background-color: #f3f6f9; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-times"></i>
                     </a>
                 @endif
             </form>
-            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                <i class="fas fa-plus me-1"></i> Karyawan
+            <button type="button" class="btn btn-primary rounded px-4 mobile-filter" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <i class="fas fa-plus me-2"></i> Karyawan
             </button>
         </div>
     </div>
@@ -117,7 +141,7 @@
                             <span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size: 0.75rem;">{{ $user->division->name ?? '-' }}</span>
                         </td>
 
-                        <td class="text-center">
+                        <td class="text-center text-nowrap">
                             <button type="button" class="btn btn-sm btn-outline-warning rounded-circle me-1" data-bs-toggle="modal" data-bs-target="#editUserModal{{ $user->id }}">
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -192,7 +216,12 @@
                     <!-- 4. Email -->
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Email</label>
-                        <input type="email" name="email" class="form-control" required>
+                        <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" required>
+                        @error('email')
+                            <div class="invalid-feedback fw-medium">
+                                Email ini sudah terdaftar. Silakan gunakan email yang lain.
+                            </div>
+                        @enderror
                     </div>
                     <!-- 5. Password -->
                     <div class="mb-3">
@@ -301,5 +330,12 @@
             icon.classList.add('fa-eye');
         }
     }
+
+    @if($errors->any() && !old('_method'))
+    document.addEventListener('DOMContentLoaded', function() {
+        var addUserModal = new bootstrap.Modal(document.getElementById('addUserModal'));
+        addUserModal.show();
+    });
+    @endif
 </script>
 @endpush
