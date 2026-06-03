@@ -24,7 +24,7 @@ class KaryawanController extends Controller
 
     public function evaluate(\App\Models\ReviewerAssignment $assignment)
     {
-        if ($assignment->reviewer_id !== auth()->id()) {
+        if ($assignment->reviewer_id != auth()->id()) {
             abort(403, 'Anda tidak memiliki hak akses untuk penilaian ini.');
         }
 
@@ -42,7 +42,7 @@ class KaryawanController extends Controller
 
     public function storeEvaluation(Request $request, \App\Models\ReviewerAssignment $assignment)
     {
-        if ($assignment->reviewer_id !== auth()->id() || !$assignment->is_active || $assignment->status !== 'pending') {
+        if ($assignment->reviewer_id != auth()->id() || !$assignment->is_active || $assignment->status !== 'pending') {
             abort(403, 'Akses ditolak.');
         }
 
