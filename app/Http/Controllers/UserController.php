@@ -11,7 +11,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = \App\Models\User::with(['branch', 'division', 'position'])->whereIn('role', ['karyawan', 'direktur']);
+        $query = \App\Models\User::with(['branch', 'division', 'position']);
         
         if ($request->filled('branch_id')) {
             $query->where('branch_id', $request->branch_id);
@@ -67,10 +67,11 @@ class UserController extends Controller
             'branch_id' => 'required|exists:branches,id',
             'division_id' => 'required|exists:divisions,id',
             'position_id' => 'nullable|exists:positions,id',
+            'role' => 'nullable|string|in:admin,hr,direktur,karyawan',
         ]);
         
         $data['password'] = bcrypt($data['password']);
-        $data['role'] = 'karyawan';
+        $data['role'] = (auth()->user()->role === 'admin' && isset($data['role'])) ? $data['role'] : 'karyawan';
         
         \App\Models\User::create($data);
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan');
@@ -85,8 +86,13 @@ class UserController extends Controller
             'branch_id' => 'required|exists:branches,id',
             'division_id' => 'required|exists:divisions,id',
             'position_id' => 'nullable|exists:positions,id',
+            'role' => 'nullable|string|in:admin,hr,direktur,karyawan',
         ]);
         
+        if (auth()->user()->role !== 'admin') {
+            unset($data['role']);
+        }
+
         if ($request->filled('password')) {
             $data['password'] = bcrypt($data['password']);
         } else {

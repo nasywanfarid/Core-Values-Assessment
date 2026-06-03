@@ -138,6 +138,7 @@
                                 </span>
                             </a>
                         </th>
+                        <th>Role</th>
                         <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -159,6 +160,11 @@
                         </td>
                         <td>
                             <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.75rem;">{{ $user->position->name ?? '-' }}</span>
+                        </td>
+                        <td>
+                            <span class="badge {{ $user->role === 'admin' ? 'bg-danger' : ($user->role === 'hr' ? 'bg-warning' : ($user->role === 'direktur' ? 'bg-primary' : 'bg-secondary')) }} text-white" style="font-size: 0.75rem;">
+                                {{ ucfirst(str_replace('karyawan', 'user', $user->role)) }}
+                            </span>
                         </td>
 
                         <td class="text-center text-nowrap">
@@ -202,10 +208,23 @@
             <form action="{{ route('admin.users.store') }}" method="POST">
                 @csrf
                 <div class="modal-body p-4">
-                    <!-- 1. Nama Lengkap -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Lengkap</label>
-                        <input type="text" name="name" class="form-control" required>
+                    <!-- 1. Nama Lengkap & Role (Khusus Admin) -->
+                    <div class="row">
+                        <div class="col-md-{{ auth()->user()->role === 'admin' ? '8' : '12' }} mb-3">
+                            <label class="form-label fw-semibold">Nama Lengkap</label>
+                            <input type="text" name="name" class="form-control" required>
+                        </div>
+                        @if(auth()->user()->role === 'admin')
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Role</label>
+                            <select name="role" class="form-select" required>
+                                <option value="karyawan">User</option>
+                                <option value="admin">Admin</option>
+                                <option value="hr">HR</option>
+                                <option value="direktur">Direktur</option>
+                            </select>
+                        </div>
+                        @endif
                     </div>
                     <!-- 2. Cabang, Divisi, Position -->
                     <div class="row">
@@ -280,10 +299,23 @@
                 @csrf
                 @method('PUT')
                 <div class="modal-body p-4">
-                    <!-- 1. Nama Lengkap -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Lengkap</label>
-                        <input type="text" name="name" class="form-control" value="{{ $user->name }}" required>
+                    <!-- 1. Nama Lengkap & Role (Khusus Admin) -->
+                    <div class="row">
+                        <div class="col-md-{{ auth()->user()->role === 'admin' ? '8' : '12' }} mb-3">
+                            <label class="form-label fw-semibold">Nama Lengkap</label>
+                            <input type="text" name="name" class="form-control" value="{{ $user->name }}" required>
+                        </div>
+                        @if(auth()->user()->role === 'admin')
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Role</label>
+                            <select name="role" class="form-select" required>
+                                <option value="karyawan" {{ $user->role === 'karyawan' ? 'selected' : '' }}>User</option>
+                                <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="hr" {{ $user->role === 'hr' ? 'selected' : '' }}>HR</option>
+                                <option value="direktur" {{ $user->role === 'direktur' ? 'selected' : '' }}>Direktur</option>
+                            </select>
+                        </div>
+                        @endif
                     </div>
                     <!-- 2. Cabang, Divisi, Position -->
                     <div class="row">
