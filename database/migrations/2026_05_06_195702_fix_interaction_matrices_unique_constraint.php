@@ -27,6 +27,11 @@ return new class extends Migration
                 DB::statement('ALTER TABLE interaction_matrices DROP INDEX unique_matrix');
             } catch (\Exception $e) {}
 
+            // Hapus foreign key lama jika ada untuk menghindari duplicate key (errno: 121)
+            try {
+                $table->dropForeign(['branch_id']);
+            } catch (\Exception $e) {}
+
             $table->unique(['target_division_id', 'reviewer_division_id'], 'global_interaction_unique');
             
             // Pasang kembali FK branch_id (sebagai nullable)
