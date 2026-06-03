@@ -24,8 +24,16 @@ class KaryawanController extends Controller
 
     public function evaluate(\App\Models\ReviewerAssignment $assignment)
     {
-        if ($assignment->reviewer_id !== auth()->id() || $assignment->status !== 'pending') {
-            abort(403);
+        if ($assignment->reviewer_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki hak akses untuk penilaian ini.');
+        }
+
+        if (!$assignment->is_active) {
+            abort(403, 'Sesi penilaian ini belum diaktifkan oleh Admin/HR.');
+        }
+
+        if ($assignment->status !== 'pending') {
+            abort(403, 'Penilaian ini sudah selesai dilakukan.');
         }
 
         $indicators = \App\Models\Indicator::all();
@@ -34,8 +42,8 @@ class KaryawanController extends Controller
 
     public function storeEvaluation(Request $request, \App\Models\ReviewerAssignment $assignment)
     {
-        if ($assignment->reviewer_id !== auth()->id() || $assignment->status !== 'pending') {
-            abort(403);
+        if ($assignment->reviewer_id !== auth()->id() || !$assignment->is_active || $assignment->status !== 'pending') {
+            abort(403, 'Akses ditolak.');
         }
 
         $request->validate([
