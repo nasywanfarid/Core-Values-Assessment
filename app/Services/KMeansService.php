@@ -6,7 +6,6 @@ class KMeansService
 {
     /**
      * Jalankan K-Means Clustering pada data karyawan.
-     * Sesuai dengan script Python: StandardScaler + n_init=10 + random_state=42.
      *
      * @param  array  $data           Array of associative arrays, setiap item berisi fitur dan metadata karyawan.
      * @param  int    $k              Jumlah cluster (default: 2).
@@ -31,10 +30,10 @@ class KMeansService
         $n           = count($data);
         $dataIndexed = array_values($data);
 
-        // 1. STANDARISASI — StandardScaler (Z-Score), sesuai Python
+        // 1. STANDARISASI — StandardScaler (Z-Score)
         $scaled = $this->standardScale($dataIndexed, $features, $n);
 
-        // 2. K-MEANS — n_init=10, random_state=42, sesuai Python
+        // 2. K-MEANS — n_init=10, random_state=42
         $bestLabels  = null;
         $bestInertia = PHP_FLOAT_MAX;
 
@@ -105,7 +104,7 @@ class KMeansService
             }
         }
 
-        // 3. TENTUKAN KATEGORI — ranking rata-rata nilai asli per cluster (sesuai Python)
+        // 3. TENTUKAN KATEGORI — ranking rata-rata nilai asli per cluster
         $clusterMeans = [];
         for ($ci = 0; $ci < $k; $ci++) {
             $members   = array_keys(array_filter($bestLabels, fn($l) => $l === $ci));
