@@ -66,7 +66,7 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
-                                        <a href="{{ route('admin.results.period', ['date' => $period->assessment_date, 'branch' => $period->branch_id]) }}" class="btn btn-primary btn-sm rounded-pill d-inline-flex align-items-center justify-content-center" style="width: 95px; height: 32px;">
+                                        <a href="{{ route('admin.results.period', ['date' => $period->assessment_date, 'branch' => $period->branch_id]) }}" class="btn btn-pink btn-sm rounded-pill d-inline-flex align-items-center justify-content-center" style="width: 95px; height: 32px;">
                                             <i class="fas fa-eye me-1"></i> Lihat
                                         </a>
                                         
@@ -100,3 +100,26 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<style>
+    .btn-pink {
+        background-color: #e83e8c;
+        border-color: #e83e8c;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .btn-pink:hover, .btn-pink:active {
+        background-color: #d63384;
+        border-color: #d63384;
+        color: white;
+        box-shadow: 0 4px 10px rgba(232, 62, 140, 0.4);
+    }
+    .btn-pink:focus {
+        background-color: #d63384;
+        border-color: #d63384;
+        color: white;
+        box-shadow: 0 0 0 0.25rem rgba(232, 62, 140, 0.5);
+    }
+</style>
+@endpush

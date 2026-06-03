@@ -37,6 +37,16 @@ class DirekturController extends Controller
 
             foreach ($employees as $employee) {
                 $assignments = $employee->assignmentsAsReviewee;
+                
+                // Pastikan ada setidaknya satu tugas penilaian yang sudah diisi
+                $hasAssessments = $assignments->contains(function($as) {
+                    return $as->assessments->isNotEmpty();
+                });
+
+                if (!$hasAssessments) {
+                    continue;
+                }
+
                 $totalSum = 0;
                 $count = $assignments->count();
 

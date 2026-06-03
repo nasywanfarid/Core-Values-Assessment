@@ -27,7 +27,8 @@ class RegisterController extends Controller
     {
         $divisions = \App\Models\Division::where('name', '!=', 'Direktur')->get();
         $branches = \App\Models\Branch::all();
-        return view('auth.register', compact('divisions', 'branches'));
+        $positions = \App\Models\Position::whereNotIn('name', ['Direktur Utama', 'Kepala Cabang'])->get();
+        return view('auth.register', compact('divisions', 'branches', 'positions'));
     }
 
     /**
@@ -58,9 +59,9 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'nip' => ['nullable', 'string', 'max:20'],
             'branch_id' => ['required', 'exists:branches,id'],
             'division_id' => ['required', 'exists:divisions,id'],
+            'position_id' => ['nullable', 'exists:positions,id'],
         ]);
     }
 
@@ -75,10 +76,30 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'nip' => $data['nip'],
             'branch_id' => $data['branch_id'],
             'division_id' => $data['division_id'],
-            'role' => 'karyawan', // Default role for registration
+            'position_id' => $data['position_id'] ?? null,
+            'role' => 'karyawan',
         ]);
+    }
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
+    public function register(\Illuminate\Http\Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        event(new \Illuminate\Auth\Events\Registered($user = $this->create($request->all())));
+
+        // Do NOT log the user in automatically.
+        // Redirect them to the login page with a premium success notification.
+
+        return $request->wantsJson()
+            ? new \Illuminate\Http\JsonResponse([], 201)
+            : redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan masuk menggunakan akun baru Anda.');
     }
 }

@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'Administrator',
             'email' => 'admin@gmail.com',
             'password' => bcrypt('password'),
-            'nip' => '123456',
             'branch_id' => $branch->id,
             'division_id' => $divIT->id,
             'role' => 'admin'
@@ -34,7 +33,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'Hanif Salsabila',
             'email' => 'hanifsalsabila@gmail.com',
             'password' => bcrypt('password'),
-            'nip' => 'D001',
             'branch_id' => $branch->id,
             'division_id' => $divDirektur->id,
             'role' => 'direktur'
@@ -44,7 +42,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'Irfan Tugiman',
             'email' => 'irfantugiman@gmail.com',
             'password' => bcrypt('password'),
-            'nip' => 'D002',
             'branch_id' => $branch->id,
             'division_id' => $divDirektur->id,
             'role' => 'direktur'
@@ -54,7 +51,6 @@ class DatabaseSeeder extends Seeder
             'name' => 'Human Resource',
             'email' => 'humanresource@gmail.com',
             'password' => bcrypt('password'),
-            'nip' => '00001',
             'branch_id' => $branch->id,
             'division_id' => $divHR->id,
             'role' => 'hr'

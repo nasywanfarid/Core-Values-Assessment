@@ -33,6 +33,7 @@ Route::middleware(['auth', 'role:admin,hr,direktur'])->prefix('admin')->name('ad
 Route::middleware(['auth', 'role:admin,hr'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('branches', App\Http\Controllers\BranchController::class);
     Route::resource('divisions', App\Http\Controllers\DivisionController::class);
+    Route::resource('positions', App\Http\Controllers\PositionController::class);
     Route::resource('users', App\Http\Controllers\UserController::class);
     Route::resource('indicators', App\Http\Controllers\IndicatorController::class);
     Route::post('interaction-matrices/store-interaction', [App\Http\Controllers\InteractionMatrixController::class, 'storeInteraction'])->name('interaction-matrices.store-interaction');

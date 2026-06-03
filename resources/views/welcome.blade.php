@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Penilaian Core Values - PT Bangun Anugrah Beton Nusantara</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,9 +96,6 @@
             
             <!-- Content -->
             <div class="relative z-10">
-                <div class="inline-block mb-6 px-5 py-2 rounded-full border border-white/10 bg-white/5 shadow-sm animate-float" style="animation-duration: 5s;">
-                    <span class="text-sm font-semibold tracking-widest text-[#ec4899] uppercase">Sistem Informasi Penilaian Kinerja</span>
-                </div>
                 
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight tracking-tight text-white">
                     Selamat Datang Di <br />

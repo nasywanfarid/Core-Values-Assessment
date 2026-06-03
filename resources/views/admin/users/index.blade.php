@@ -20,45 +20,63 @@
     }
 </style>
 <div class="card premium-card border-0 shadow-sm">
-    <div class="card-header bg-white border-0 py-3 d-flex align-items-center justify-content-between flex-wrap gap-3 mobile-header">
+    <div class="card-header bg-white border-0 py-3 d-flex align-items-center justify-content-between">
         <h5 class="mb-0 fw-bold text-primary">Daftar Karyawan</h5>
-        <div class="d-flex align-items-center flex-wrap flex-md-nowrap gap-2 mobile-stack">
-            <form action="{{ route('admin.users.index') }}" method="GET" class="d-flex align-items-center flex-wrap flex-md-nowrap gap-2 mobile-stack">
-                <!-- Branch Filter -->
-                <select name="branch_id" class="form-select form-select-sm border-0 rounded px-3 text-muted fw-normal mobile-filter" onchange="this.form.submit()" style="width: 170px; background-color: #f3f6f9; font-size: 0.85rem; height: 38px; cursor: pointer;">
+        <button type="button" class="btn btn-primary rounded px-4" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <i class="fas fa-plus me-2"></i> Karyawan
+        </button>
+    </div>
+    
+    <!-- Premium Filter Bar -->
+    <div class="bg-light px-4 py-3 border-top border-bottom">
+        <form action="{{ route('admin.users.index') }}" method="GET" class="row g-2 align-items-center">
+            <!-- Branch Filter -->
+            <div class="col-12 col-sm-6 col-md-3">
+                <select name="branch_id" class="form-select border-0 rounded px-3 text-muted fw-normal w-100" onchange="this.form.submit()" style="background-color: #eef2f5; font-size: 0.85rem; height: 38px; cursor: pointer;">
                     <option value="">Semua Cabang</option>
                     @foreach($branches as $branch)
                         <option value="{{ $branch->id }}" {{ request('branch_id') == $branch->id ? 'selected' : '' }}>{{ $branch->name }}</option>
                     @endforeach
                 </select>
+            </div>
 
-                <!-- Division Filter -->
-                <select name="division_id" class="form-select form-select-sm border-0 rounded px-3 text-muted fw-normal mobile-filter" onchange="this.form.submit()" style="width: 170px; background-color: #f3f6f9; font-size: 0.85rem; height: 38px; cursor: pointer;">
+            <!-- Division Filter -->
+            <div class="col-12 col-sm-6 col-md-3">
+                <select name="division_id" class="form-select border-0 rounded px-3 text-muted fw-normal w-100" onchange="this.form.submit()" style="background-color: #eef2f5; font-size: 0.85rem; height: 38px; cursor: pointer;">
                     <option value="">Semua Divisi</option>
                     @foreach($divisions as $division)
                         <option value="{{ $division->id }}" {{ request('division_id') == $division->id ? 'selected' : '' }}>{{ $division->name }}</option>
                     @endforeach
                 </select>
+            </div>
 
-                <!-- Search Input -->
-                <div class="input-group mobile-filter" style="width: 170px;">
-                    <input type="text" name="search" class="form-control form-control-sm border-0 rounded-start px-3 text-muted fw-normal" placeholder="Cari karyawan..." value="{{ request('search') }}" style="background-color: #f3f6f9; font-size: 0.85rem; height: 38px;">
-                    <button class="btn btn-sm border-0 rounded-end text-muted" type="submit" style="background-color: #f3f6f9; height: 38px;">
+            <!-- Position Filter -->
+            <div class="col-12 col-sm-6 col-md-3">
+                <select name="position_id" class="form-select border-0 rounded px-3 text-muted fw-normal w-100" onchange="this.form.submit()" style="background-color: #eef2f5; font-size: 0.85rem; height: 38px; cursor: pointer;">
+                    <option value="">Semua Jabatan</option>
+                    @foreach($positions as $position)
+                        <option value="{{ $position->id }}" {{ request('position_id') == $position->id ? 'selected' : '' }}>{{ $position->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Search Input -->
+            <div class="col-12 col-sm-6 col-md-3 d-flex gap-2">
+                <div class="input-group flex-grow-1">
+                    <input type="text" name="search" class="form-control border-0 rounded-start px-3 text-muted fw-normal" placeholder="Cari nama atau email..." value="{{ request('search') }}" style="background-color: #eef2f5; font-size: 0.85rem; height: 38px;">
+                    <button class="btn border-0 rounded-end text-muted" type="submit" style="background-color: #eef2f5; height: 38px;">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
-
-                @if(request('branch_id') || request('division_id') || request('search'))
-                    <a href="{{ route('admin.users.index') }}" class="btn btn-sm rounded-circle border-0 text-muted mobile-filter" title="Bersihkan Filter" style="background-color: #f3f6f9; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                @if(request('branch_id') || request('division_id') || request('position_id') || request('search'))
+                    <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary border-0 text-muted d-flex align-items-center justify-content-center" title="Bersihkan Filter" style="background-color: #eef2f5; width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;">
                         <i class="fas fa-times"></i>
                     </a>
                 @endif
-            </form>
-            <button type="button" class="btn btn-primary rounded px-4 mobile-filter" data-bs-toggle="modal" data-bs-target="#addUserModal">
-                <i class="fas fa-plus me-2"></i> Karyawan
-            </button>
-        </div>
+            </div>
+        </form>
     </div>
+
     <div class="card-body p-0">
         @if(session('success'))
             <div class="alert alert-success mx-4 mt-3">
@@ -95,11 +113,12 @@
                                 </span>
                             </a>
                         </th>
+                        <th>Cabang</th>
                         <th>
-                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'nip', 'direction' => request('sort') == 'nip' && request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-dark d-flex align-items-center">
-                                NIP
+                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'division', 'direction' => request('sort') == 'division' && request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-dark d-flex align-items-center">
+                                Divisi
                                 <span class="ms-1">
-                                    @if(request('sort') == 'nip')
+                                    @if(request('sort') == 'division')
                                         <i class="fas fa-sort-{{ request('direction') == 'asc' ? 'up' : 'down' }} text-primary"></i>
                                     @else
                                         <i class="fas fa-sort text-muted opacity-25"></i>
@@ -107,12 +126,11 @@
                                 </span>
                             </a>
                         </th>
-                        <th>Cabang</th>
                         <th>
-                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'division', 'direction' => request('sort') == 'division' && request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-dark d-flex align-items-center">
-                                Divisi
+                            <a href="{{ request()->fullUrlWithQuery(['sort' => 'position', 'direction' => request('sort') == 'position' && request('direction') == 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none text-dark d-flex align-items-center">
+                                Jabatan
                                 <span class="ms-1">
-                                    @if(request('sort') == 'division')
+                                    @if(request('sort') == 'position')
                                         <i class="fas fa-sort-{{ request('direction') == 'asc' ? 'up' : 'down' }} text-primary"></i>
                                     @else
                                         <i class="fas fa-sort text-muted opacity-25"></i>
@@ -135,10 +153,12 @@
                             </div>
                         </td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->nip ?? '-' }}</td>
                         <td><span class="badge bg-info bg-opacity-10 text-info" style="font-size: 0.75rem;">{{ $user->branch->name ?? '-' }}</span></td>
                         <td>
                             <span class="badge bg-secondary bg-opacity-10 text-secondary" style="font-size: 0.75rem;">{{ $user->division->name ?? '-' }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.75rem;">{{ $user->position->name ?? '-' }}</span>
                         </td>
 
                         <td class="text-center text-nowrap">
@@ -159,7 +179,7 @@
 
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center py-4 text-muted">Belum ada data karyawan.</td>
+                        <td colspan="6" class="text-center py-4 text-muted">Belum ada data karyawan.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -187,14 +207,9 @@
                         <label class="form-label fw-semibold">Nama Lengkap</label>
                         <input type="text" name="name" class="form-control" required>
                     </div>
-                    <!-- 2. NIP -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">NIP</label>
-                        <input type="text" name="nip" class="form-control">
-                    </div>
-                    <!-- 3. Cabang & Divisi -->
+                    <!-- 2. Cabang, Divisi, Position -->
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">Cabang</label>
                             <select name="branch_id" class="form-select" required>
                                 <option value="">Pilih Cabang</option>
@@ -203,12 +218,21 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">Divisi</label>
                             <select name="division_id" class="form-select" required>
                                 <option value="">Pilih Divisi</option>
                                 @foreach($divisions as $division)
                                     <option value="{{ $division->id }}">{{ $division->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Jabatan</label>
+                            <select name="position_id" class="form-select">
+                                <option value="">Pilih Jabatan</option>
+                                @foreach($positions as $position)
+                                    <option value="{{ $position->id }}">{{ $position->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -261,14 +285,9 @@
                         <label class="form-label fw-semibold">Nama Lengkap</label>
                         <input type="text" name="name" class="form-control" value="{{ $user->name }}" required>
                     </div>
-                    <!-- 2. NIP -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">NIP</label>
-                        <input type="text" name="nip" class="form-control" value="{{ $user->nip }}">
-                    </div>
-                    <!-- 3. Cabang & Divisi -->
+                    <!-- 2. Cabang, Divisi, Position -->
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">Cabang</label>
                             <select name="branch_id" class="form-select" required>
                                 <option value="">Pilih Cabang</option>
@@ -277,12 +296,21 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">Divisi</label>
                             <select name="division_id" class="form-select" required>
                                 <option value="">Pilih Divisi</option>
                                 @foreach($divisions as $division)
                                     <option value="{{ $division->id }}" {{ $user->division_id == $division->id ? 'selected' : '' }}>{{ $division->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">Jabatan</label>
+                            <select name="position_id" class="form-select">
+                                <option value="">Pilih Jabatan</option>
+                                @foreach($positions as $position)
+                                    <option value="{{ $position->id }}" {{ $user->position_id == $position->id ? 'selected' : '' }}>{{ $position->name }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -28,15 +28,18 @@
                 @else
                 <div class="list-group list-group-flush border-top">
                     @foreach($pendingAssignments as $assignment)
-                    <div class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom px-0">
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom px-3">
                         <div class="d-flex align-items-center">
-                            <img src="https://ui-avatars.com/api/?name={{ $assignment->reviewee->name }}&background=f1f3f5&color=495057" class="rounded-circle me-3" width="48" height="48">
+                            <img src="https://ui-avatars.com/api/?name={{ $assignment->reviewee->name }}&background=e83e8c&color=fff" class="rounded-circle me-3" width="48" height="48">
                             <div>
                                 <h6 class="mb-1 fw-bold">{{ $assignment->reviewee->name }}</h6>
                                 <div class="mb-1 small">
                                     <span class="badge bg-warning text-dark"><i class="fas fa-calendar-alt me-1"></i> Periode: {{ \Carbon\Carbon::parse($assignment->assessment_date)->translatedFormat('F Y') }}</span>
                                 </div>
-                                <small class="text-muted"><i class="fas fa-id-badge me-1"></i> NIP: {{ $assignment->reviewee->nip ?? '-' }} | Divisi: {{ $assignment->reviewee->division->name ?? 'N/A' }}</small>
+                                <small class="text-muted"><i class="fas fa-sitemap me-1"></i> Divisi: {{ $assignment->reviewee->division->name ?? 'N/A' }}</small>
+                                @if($assignment->reviewee->position)
+                                <small class="text-muted ms-2"><i class="fas fa-briefcase me-1"></i> Jabatan: {{ $assignment->reviewee->position->name }}</small>
+                                @endif
                             </div>
                         </div>
                         <a href="{{ route('karyawan.evaluate', $assignment->id) }}" class="btn btn-primary btn-sm px-4 rounded-pill">
@@ -81,7 +84,7 @@
                 @else
                 <div class="list-group list-group-flush border-top">
                     @foreach($completedAssignments->take(5) as $completed)
-                    <div class="list-group-item px-0 py-2 border-bottom d-flex align-items-center">
+                    <div class="list-group-item px-3 py-2 border-bottom d-flex align-items-center">
                         <i class="fas fa-circle text-success me-2" style="font-size: 8px;"></i>
                         <span class="small fw-medium">{{ $completed->reviewee->name }}</span>
                         <span class="ms-auto text-muted small">{{ $completed->updated_at->format('d/m/Y') }}</span>

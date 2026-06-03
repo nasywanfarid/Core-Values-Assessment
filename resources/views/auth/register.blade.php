@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Daftar - {{ config('app.name', 'Core Values') }}</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,10 +54,14 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: white;
             transition: all 0.3s ease;
+            font-family: 'Outfit', sans-serif !important;
+            font-weight: 400 !important;
         }
         .input-glass option {
             background-color: #1e293b;
             color: white;
+            font-family: 'Outfit', sans-serif !important;
+            font-weight: 400 !important;
         }
         .input-glass:focus {
             background: rgba(255, 255, 255, 0.1);
@@ -102,18 +109,7 @@
                     @enderror
                 </div>
 
-                <!-- 2. NIP Input -->
-                <div class="mb-5">
-                    <label for="nip" class="block text-sm font-medium text-slate-300 mb-2">NIP (Nomor Induk Pegawai)</label>
-                    <input id="nip" type="text" name="nip" value="{{ old('nip') }}"
-                           class="w-full input-glass rounded-xl px-4 py-3 text-base @error('nip') border-red-500 @enderror" 
-                           placeholder="Contoh: 123456">
-                    @error('nip')
-                        <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- 3. Branch & Division -->
+                <!-- 2. Branch & Division -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
                     <div>
                         <label for="branch_id" class="block text-sm font-medium text-slate-300 mb-2">Cabang</label>
@@ -141,6 +137,21 @@
                             <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <!-- 3. Position Input -->
+                <div class="mb-5">
+                    <label for="position_id" class="block text-sm font-medium text-slate-300 mb-2">Jabatan</label>
+                    <select id="position_id" name="position_id"
+                            class="w-full input-glass rounded-xl px-4 py-3 text-base @error('position_id') border-red-500 @enderror appearance-none bg-slate-800 text-white cursor-pointer focus:ring-2 focus:ring-purple-500 outline-none">
+                        <option value="" class="bg-slate-800 text-white">Pilih Jabatan</option>
+                        @foreach($positions as $position)
+                            <option value="{{ $position->id }}" {{ old('position_id') == $position->id ? 'selected' : '' }} class="bg-slate-800 text-white">{{ $position->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('position_id')
+                        <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- 4. Email Input -->

@@ -98,7 +98,7 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('admin.results.detail', ['date' => $date, 'branch' => $branch->id, 'user' => $item->id]) }}" class="btn btn-sm btn-outline-primary px-3 rounded-pill">
+                                    <a href="{{ route('admin.results.detail', ['date' => $date, 'branch' => $branch->id, 'user' => $item->id]) }}" class="btn btn-sm btn-outline-pink px-3 rounded-pill">
                                         Detail <i class="fas fa-eye ms-1"></i>
                                     </a>
                                 </td>
@@ -118,3 +118,19 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<style>
+    .btn-outline-pink {
+        color: #e83e8c;
+        border-color: #e83e8c;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-pink:hover, .btn-outline-pink:active, .btn-outline-pink:focus {
+        background-color: #e83e8c;
+        border-color: #e83e8c;
+        color: white;
+        box-shadow: 0 4px 10px rgba(232, 62, 140, 0.4);
+    }
+</style>
+@endpush

@@ -11,7 +11,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = \App\Models\User::with(['branch', 'division'])->whereIn('role', ['karyawan', 'direktur']);
+        $query = \App\Models\User::with(['branch', 'division', 'position'])->whereIn('role', ['karyawan', 'direktur']);
         
         if ($request->filled('branch_id')) {
             $query->where('branch_id', $request->branch_id);
@@ -21,12 +21,15 @@ class UserController extends Controller
             $query->where('division_id', $request->division_id);
         }
 
+        if ($request->filled('position_id')) {
+            $query->where('position_id', $request->position_id);
+        }
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('nip', 'like', "%{$search}%");
+                  ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -34,11 +37,15 @@ class UserController extends Controller
         $direction = $request->get('direction', 'asc');
         
         // Validate sort column to prevent SQL injection
-        if (in_array($sort, ['name', 'nip', 'email'])) {
+        if (in_array($sort, ['name', 'email'])) {
             $query->orderBy($sort, $direction);
         } elseif ($sort === 'division') {
             $query->join('divisions', 'users.division_id', '=', 'divisions.id')
                   ->orderBy('divisions.name', $direction)
+                  ->select('users.*');
+        } elseif ($sort === 'position') {
+            $query->leftJoin('positions', 'users.position_id', '=', 'positions.id')
+                  ->orderBy('positions.name', $direction)
                   ->select('users.*');
         } else {
             $query->orderBy('name', 'asc');
@@ -47,7 +54,8 @@ class UserController extends Controller
         $users = $query->paginate(25)->withQueryString();
         $branches = \App\Models\Branch::all();
         $divisions = \App\Models\Division::all();
-        return view('admin.users.index', compact('users', 'branches', 'divisions'));
+        $positions = \App\Models\Position::all();
+        return view('admin.users.index', compact('users', 'branches', 'divisions', 'positions'));
     }
 
     public function store(Request $request)
@@ -56,9 +64,9 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'nip' => 'nullable|string',
             'branch_id' => 'required|exists:branches,id',
             'division_id' => 'required|exists:divisions,id',
+            'position_id' => 'nullable|exists:positions,id',
         ]);
         
         $data['password'] = bcrypt($data['password']);
@@ -74,9 +82,9 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:8',
-            'nip' => 'nullable|string',
             'branch_id' => 'required|exists:branches,id',
             'division_id' => 'required|exists:divisions,id',
+            'position_id' => 'nullable|exists:positions,id',
         ]);
         
         if ($request->filled('password')) {

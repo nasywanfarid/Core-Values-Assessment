@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Karyawan Portal - Core Values System</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    
     <!-- Bootstrap CSS via Vite -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 

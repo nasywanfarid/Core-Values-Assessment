@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Dashboard - Core Values System</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    
     <!-- Bootstrap CSS via Vite -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
@@ -193,6 +196,11 @@
                     <li class="nav-item">
                         <a href="{{ route('admin.divisions.index') }}" class="nav-link {{ request()->routeIs('admin.divisions.*') ? 'active' : '' }}">
                             <i class="fas fa-sitemap"></i> Data Divisi
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('admin.positions.index') }}" class="nav-link {{ request()->routeIs('admin.positions.*') ? 'active' : '' }}">
+                            <i class="fas fa-briefcase"></i> Data Jabatan
                         </a>
                     </li>
                     <li class="nav-item">

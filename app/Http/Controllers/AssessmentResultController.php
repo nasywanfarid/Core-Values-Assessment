@@ -241,6 +241,16 @@ class AssessmentResultController extends Controller
 
             $dataForClustering = $employees->map(function($user) use ($indicators, $indicatorMap) {
                 $assignments = $user->assignmentsAsReviewee;
+                
+                // Pastikan ada setidaknya satu tugas penilaian yang sudah diisi (assessments tidak kosong)
+                $hasAssessments = $assignments->contains(function($assignment) {
+                    return $assignment->assessments->isNotEmpty();
+                });
+
+                if (!$hasAssessments) {
+                    return null;
+                }
+
                 $totalSum = 0;
                 $reviewerCount = $assignments->count();
 
@@ -267,7 +277,7 @@ class AssessmentResultController extends Controller
                 foreach ($assignments as $assignment) { $totalSum += $assignment->assessments->sum('score'); }
                 $row['total_score'] = round($reviewerCount > 0 ? $totalSum / $reviewerCount : 0, 2);
                 return $row;
-            })->toArray();
+            })->filter()->values()->toArray();
 
             // Panggil Flask API
             $clusteredData = $this->getClustersFromPython($dataForClustering);

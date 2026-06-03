@@ -12,13 +12,13 @@
                         <p class="text-white-50 text-uppercase fw-bold mb-1">Mengevaluasi Karyawan</p>
                         <h2 class="fw-bold mb-2">{{ $assignment->reviewee->name }}</h2>
                         <ul class="list-inline mb-0 text-white-50">
-                            <li class="list-inline-item"><i class="fas fa-id-badge me-1"></i> NIP: {{ $assignment->reviewee->nip ?? '-' }}</li>
                             <li class="list-inline-item"><i class="fas fa-sitemap me-1 ms-3"></i> Divisi: {{ $assignment->reviewee->division->name ?? '-' }}</li>
+                            <li class="list-inline-item"><i class="fas fa-briefcase me-1 ms-3"></i> Jabatan: {{ $assignment->reviewee->position->name ?? '-' }}</li>
                             <li class="list-inline-item"><i class="fas fa-calendar-alt me-1 ms-3"></i> Periode: {{ \Carbon\Carbon::parse($assignment->assessment_date)->translatedFormat('F Y') }}</li>
                         </ul>
                     </div>
                     <div class="col-md-4 text-md-end mt-4 mt-md-0">
-                        <img src="https://ui-avatars.com/api/?name={{ $assignment->reviewee->name }}&background=fff&color=4361ee&size=100" class="rounded-circle shadow-lg border border-3 border-white">
+                        <img src="https://ui-avatars.com/api/?name={{ $assignment->reviewee->name }}&background=e83e8c&color=fff&size=100" class="rounded-circle shadow-lg border border-3 border-white">
                     </div>
                 </div>
             </div>
@@ -72,7 +72,7 @@
                                 @for($i = 1; $i <= 5; $i++)
                                 <div class="form-check p-0 me-2 position-relative">
                                     <input type="radio" class="btn-check" name="scores[{{ $indicator->id }}]" id="score_{{ $indicator->id }}_{{ $i }}" value="{{ $i }}" {{ old('scores.'.$indicator->id) == $i ? 'checked' : '' }} required>
-                                    <label class="btn btn-outline-primary fw-bold rounded-circle d-flex justify-content-center align-items-center transition-all shadow-sm" style="width: 50px; height: 50px;" for="score_{{ $indicator->id }}_{{ $i }}">{{ $i }}</label>
+                                    <label class="btn btn-outline-pink fw-bold rounded-circle d-flex justify-content-center align-items-center transition-all shadow-sm" style="width: 50px; height: 50px;" for="score_{{ $indicator->id }}_{{ $i }}">{{ $i }}</label>
                                 </div>
                                 @endfor
                             </div>
@@ -95,7 +95,7 @@
                     <a href="{{ route('karyawan.dashboard') }}" class="btn btn-outline-secondary px-4 fw-bold rounded-pill">
                         <i class="fas fa-times me-1"></i> Batal
                     </a>
-                    <button type="submit" class="btn btn-primary px-4 fw-bold rounded-pill shadow-sm">
+                    <button type="submit" class="btn btn-pink px-4 fw-bold rounded-pill shadow-sm">
                         <i class="fas fa-paper-plane me-1"></i> Submit Penilaian
                     </button>
                 </div>
@@ -107,15 +107,38 @@
 
 @push('scripts')
 <style>
-    .btn-check:checked + .btn-outline-primary {
-        background-color: #4361ee;
+    .btn-pink {
+        background-color: #e83e8c;
+        border-color: #e83e8c;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .btn-pink:hover, .btn-pink:active {
+        background-color: #d63384;
+        border-color: #d63384;
+        color: white;
+        box-shadow: 0 4px 10px rgba(232, 62, 140, 0.4);
+    }
+    .btn-pink:focus {
+        background-color: #d63384;
+        border-color: #d63384;
+        color: white;
+        box-shadow: 0 0 0 0.25rem rgba(232, 62, 140, 0.5);
+    }
+    .btn-outline-pink {
+        color: #e83e8c;
+        border-color: #e83e8c;
+    }
+    .btn-check:checked + .btn-outline-pink {
+        background-color: #e83e8c;
+        border-color: #e83e8c;
         color: white;
         transform: scale(1.1);
-        box-shadow: 0 4px 10px rgba(67, 97, 238, 0.4);
+        box-shadow: 0 4px 10px rgba(232, 62, 140, 0.4);
     }
-    .btn-outline-primary:hover {
-        background-color: rgba(67, 97, 238, 0.1);
-        color: #4361ee;
+    .btn-outline-pink:hover {
+        background-color: rgba(232, 62, 140, 0.1);
+        color: #e83e8c;
     }
 </style>
 <script>

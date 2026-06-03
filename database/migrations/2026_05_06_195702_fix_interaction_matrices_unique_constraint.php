@@ -22,13 +22,11 @@ return new class extends Migration
         // Namun, jika kita ingin mematikan validasi unik lama, kita harus drop foreign key dulu.
         
         Schema::table('interaction_matrices', function (Blueprint $table) {
-            // Drop FK dulu agar bisa drop index
+            // Drop index if needed
             try {
-                $table->dropForeign(['branch_id']);
-                $table->dropUnique('unique_matrix');
+                DB::statement('ALTER TABLE interaction_matrices DROP INDEX unique_matrix');
             } catch (\Exception $e) {}
 
-            // Buat aturan unik baru yang GLOBAL
             $table->unique(['target_division_id', 'reviewer_division_id'], 'global_interaction_unique');
             
             // Pasang kembali FK branch_id (sebagai nullable)

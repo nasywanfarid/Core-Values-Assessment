@@ -48,41 +48,116 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">NIP</label>
-                                <input type="text" class="form-control bg-light" value="{{ auth()->user()->nip }}" readonly>
+                            @if(auth()->user()->role === 'admin')
+                            {{-- Editable dropdowns for admin --}}
+                            <div class="col-md-4">
+                                <label for="division_id" class="form-label fw-semibold">Divisi</label>
+                                <select class="form-select @error('division_id') is-invalid @enderror"
+                                        id="division_id" name="division_id" required>
+                                    <option value="">-- Pilih Divisi --</option>
+                                    @foreach($divisions as $division)
+                                        <option value="{{ $division->id }}"
+                                            {{ old('division_id', auth()->user()->division_id) == $division->id ? 'selected' : '' }}>
+                                            {{ $division->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('division_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Divisi / Cabang</label>
-                                <input type="text" class="form-control bg-light" value="{{ auth()->user()->division->name ?? '-' }} / {{ auth()->user()->branch->name ?? '-' }}" readonly>
+                            <div class="col-md-4">
+                                <label for="branch_id" class="form-label fw-semibold">Cabang</label>
+                                <select class="form-select @error('branch_id') is-invalid @enderror"
+                                        id="branch_id" name="branch_id" required>
+                                    <option value="">-- Pilih Cabang --</option>
+                                    @foreach($branches as $branch)
+                                        <option value="{{ $branch->id }}"
+                                            {{ old('branch_id', auth()->user()->branch_id) == $branch->id ? 'selected' : '' }}>
+                                            {{ $branch->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('branch_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
+
+                            <div class="col-md-4">
+                                <label for="position_id" class="form-label fw-semibold">Jabatan</label>
+                                <select class="form-select @error('position_id') is-invalid @enderror"
+                                        id="position_id" name="position_id">
+                                    <option value="">-- Pilih Jabatan --</option>
+                                    @foreach($positions as $position)
+                                        <option value="{{ $position->id }}"
+                                            {{ old('position_id', auth()->user()->position_id) == $position->id ? 'selected' : '' }}>
+                                            {{ $position->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('position_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            @else
+                            {{-- Readonly for non-admin users --}}
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Divisi</label>
+                                <input type="text" class="form-control bg-light" value="{{ auth()->user()->division->name ?? '-' }}" readonly>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Cabang</label>
+                                <input type="text" class="form-control bg-light" value="{{ auth()->user()->branch->name ?? '-' }}" readonly>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Jabatan</label>
+                                <input type="text" class="form-control bg-light" value="{{ auth()->user()->position->name ?? '-' }}" readonly>
+                            </div>
+                            @endif
 
                             <hr class="my-4">
                             <h6 class="fw-bold mb-3">Ubah Password (Opsional)</h6>
 
                             <div class="col-md-12">
                                 <label for="current_password" class="form-label fw-semibold">Password Saat Ini</label>
-                                <input type="password" class="form-control @error('current_password') is-invalid @enderror" 
-                                       id="current_password" name="current_password">
+                                <div class="position-relative">
+                                    <input type="password" class="form-control pe-5 @error('current_password') is-invalid @enderror" 
+                                           id="current_password" name="current_password">
+                                    <button class="btn border-0 position-absolute end-0 top-50 translate-middle-y text-muted" type="button" onclick="togglePasswordVisibility('current_password')" style="background: none; box-shadow: none; z-index: 5;">
+                                        <i class="fas fa-eye" id="icon-current_password"></i>
+                                    </button>
+                                </div>
                                 @error('current_password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-md-6">
                                 <label for="new_password" class="form-label fw-semibold">Password Baru</label>
-                                <input type="password" class="form-control @error('new_password') is-invalid @enderror" 
-                                       id="new_password" name="new_password">
+                                <div class="position-relative">
+                                    <input type="password" class="form-control pe-5 @error('new_password') is-invalid @enderror" 
+                                           id="new_password" name="new_password">
+                                    <button class="btn border-0 position-absolute end-0 top-50 translate-middle-y text-muted" type="button" onclick="togglePasswordVisibility('new_password')" style="background: none; box-shadow: none; z-index: 5;">
+                                        <i class="fas fa-eye" id="icon-new_password"></i>
+                                    </button>
+                                </div>
                                 @error('new_password')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-md-6">
                                 <label for="new_password_confirmation" class="form-label fw-semibold">Konfirmasi Password Baru</label>
-                                <input type="password" class="form-control" 
-                                       id="new_password_confirmation" name="new_password_confirmation">
+                                <div class="position-relative">
+                                    <input type="password" class="form-control pe-5" 
+                                           id="new_password_confirmation" name="new_password_confirmation">
+                                    <button class="btn border-0 position-absolute end-0 top-50 translate-middle-y text-muted" type="button" onclick="togglePasswordVisibility('new_password_confirmation')" style="background: none; box-shadow: none; z-index: 5;">
+                                        <i class="fas fa-eye" id="icon-new_password_confirmation"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -98,3 +173,21 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function togglePasswordVisibility(inputId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById('icon-' + inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
+@endpush

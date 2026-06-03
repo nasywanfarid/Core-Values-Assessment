@@ -45,10 +45,10 @@
                                 <i class="fas fa-edit"></i>
                             </button>
                             @if(auth()->user()->role !== 'hr')
-                            <form action="{{ route('admin.branches.destroy', $branch->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus cabang ini?')">
+                            <form id="delete-cabang-{{ $branch->id }}" action="{{ route('admin.branches.destroy', $branch->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger rounded-circle">
+                                <button type="button" class="btn btn-sm btn-outline-danger rounded-circle" onclick="confirmDelete('delete-cabang-{{ $branch->id }}', 'Cabang {{ $branch->name }} akan dihapus!')">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>

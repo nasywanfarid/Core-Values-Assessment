@@ -22,9 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'nip',
         'branch_id',
         'division_id',
+        'position_id',
         'role',
     ];
 
@@ -59,6 +59,11 @@ class User extends Authenticatable
     public function division()
     {
         return $this->belongsTo(Division::class);
+    }
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
     }
 
     public function assignmentsAsReviewer()
