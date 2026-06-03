@@ -7,9 +7,9 @@ use App\Models\Division;
 use App\Models\Indicator;
 use App\Models\ReviewerAssignment;
 use App\Models\User;
+use App\Services\KMeansService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 
 class AssessmentResultController extends Controller
 {
@@ -122,28 +122,6 @@ class AssessmentResultController extends Controller
         return view('admin.results.period', compact('results', 'date', 'branch', 'divisions'));
     }
 
-    private function getClustersFromPython($data)
-    {
-        if (empty($data)) return $data;
-
-        try {
-            // Timeout 5 detik agar tidak menghambat loading jika API mati
-            $response = Http::timeout(5)->post('http://localhost:5000/cluster', $data);
-            
-            if ($response->successful()) {
-                return $response->json();
-            }
-        } catch (\Exception $e) {
-            // Log error jika perlu, tapi biarkan aplikasi tetap jalan
-            \Log::warning("Gagal terhubung ke Flask API: " . $e->getMessage());
-        }
-
-        // Jika gagal, tambahkan kolom Kategori kosong agar tidak error di view
-        return array_map(function($item) {
-            $item['Kategori'] = '-';
-            return $item;
-        }, $data);
-    }
 
     public function exportExcel($date, $branchId)
     {
@@ -280,7 +258,7 @@ class AssessmentResultController extends Controller
             })->filter()->values()->toArray();
 
             // Panggil Flask API
-            $clusteredData = $this->getClustersFromPython($dataForClustering);
+            $clusteredData = (new KMeansService())->cluster($dataForClustering);
             
             // Group by Kategori
             $results = collect($clusteredData)->map(function($item) {

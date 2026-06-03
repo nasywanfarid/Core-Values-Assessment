@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\KMeansService;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -91,7 +92,7 @@ class AdminController extends Controller
             // Panggil Flask untuk Clustering
             $employeeResults = [];
             if (!empty($dataForClustering)) {
-                $clustered = $this->getClustersFromPython($dataForClustering);
+                $clustered = (new KMeansService())->cluster($dataForClustering);
                 
                 // Gabungkan data clustering kembali ke daftar karyawan untuk ditampilkan di tabel
                 foreach ($clustered as $item) {
@@ -138,12 +139,4 @@ class AdminController extends Controller
         return ['grade' => 'E'];
     }
 
-    private function getClustersFromPython($data)
-    {
-        try {
-            $response = \Illuminate\Support\Facades\Http::timeout(3)->post('http://localhost:5000/cluster', $data);
-            if ($response->successful()) return $response->json();
-        } catch (\Exception $e) {}
-        return array_map(function($i) { $i['Kategori'] = '-'; return $i; }, $data);
-    }
 }
