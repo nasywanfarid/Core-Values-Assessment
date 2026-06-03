@@ -64,8 +64,9 @@ class AssessmentGeneratorController extends Controller
             $reviewerLoad[$emp->id] = 0;
         }
 
-        // 4. Filter Target: Direktur (Hanif Salsabila ID 2) tidak dinilai
-        $targets = $employees->where('id', '!=', 2);
+        // 4. Filter Target: Karyawan yang berada di divisi "Direktur" tidak dinilai
+        $direkturDivId = \App\Models\Division::where('name', 'Direktur')->value('id');
+        $targets = $employees->where('division_id', '!=', $direkturDivId);
 
         foreach ($targets as $target) {
             // Cari divisi penilai yang diizinkan

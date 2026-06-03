@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $branch = \App\Models\Branch::create(['name' => 'Pusat']);
+        $branch = \App\Models\Branch::create(['name' => 'BP01']);
         $divIT       = \App\Models\Division::create(['name' => 'IT']);
         $divHR       = \App\Models\Division::create(['name' => 'HRD']);
         $divDirektur  = \App\Models\Division::create(['name' => 'Direktur']);
